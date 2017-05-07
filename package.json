@@ -1,0 +1,51 @@
+{
+  "name": "imdone-cli",
+  "version": "1.0.0",
+  "description": "A command line tool that syncs your project's TODO comments with imdone.io, github, waffle, trello, jira, twitter or anywhere!",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard",
+    "test": "npm run lint && nyc mocha"
+  },
+  "bin": {
+    "imdone": "./index.js",
+    "imdone-add": "bin/imdone-add.js",
+    "imdone-remove": "bin/imdone-remove.js",
+    "imdone-list": "bin/imdone-list.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imdone/imdone-cli.git"
+  },
+  "keywords": [
+    "TODO",
+    "issues",
+    "scrum",
+    "Technical-Debt",
+    "FIXME"
+  ],
+  "author": "Jesse Piascik",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/imdone/imdone-cli/issues"
+  },
+  "homepage": "https://github.com/imdone/imdone-cli#readme",
+  "standard": {
+    "globals": [
+      "describe",
+      "it",
+      "should"
+    ]
+  },
+  "devDependencies": {
+    "fs.extra": "^1.3.2",
+    "mocha": "^3.3.0",
+    "nyc": "^10.2.0",
+    "should": "^11.2.1",
+    "standard": "^10.0.2"
+  },
+  "dependencies": {
+    "commander": "^2.9.0",
+    "npid": "^0.4.0"
+  }
+}
