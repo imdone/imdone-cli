@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "commander": "^2.9.0",
+    "imdone-core": "^1.3.27",
     "npid": "^0.4.0"
   }
 }
