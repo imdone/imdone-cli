@@ -32,11 +32,11 @@ describe('repo-manager', () => {
 
   describe('remove', () => {
     it('should remove a repo by directory', (done) => {
-      helper.newTestDataDir((err, testDataDir) => {
+      helper.newTestDataDir(helper.getTempDir('myTest'), (err, testDataDir) => {
         if (err) return done(err)
         repoManager.removeAll()
         var repo = repoManager.add(testDataDir)
-        helper.newTestDataDir(helper.getTempDir('myTest'), (err, otherTestDir) => {
+        helper.newTestDataDir(helper.getTempDir('myTest1'), (err, otherTestDir) => {
           if (err) return done(err)
           repoManager.add(otherTestDir).on('initialized', (data) => {
             should(repoManager.getAll()).be.an.Array().and.have.length(2)
