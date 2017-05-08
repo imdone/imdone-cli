@@ -31,7 +31,7 @@ describe('repo-manager', () => {
   })
 
   describe('remove', () => {
-    it('should remove a repo by directory', (done) => {
+    it('should remove a repo by path', (done) => {
       helper.newTestDataDir(helper.getTempDir('myTest'), (err, testDataDir) => {
         if (err) return done(err)
         repoManager.removeAll()
