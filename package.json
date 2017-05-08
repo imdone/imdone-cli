@@ -4,7 +4,7 @@
   "description": "A command line tool that syncs your project's TODO comments with imdone.io, github, waffle, trello, jira, twitter or anywhere!",
   "main": "index.js",
   "scripts": {
-    "lint": "standard --env mocha",
+    "lint": "standard",
     "test": "npm run lint && nyc mocha"
   },
   "bin": {
@@ -32,6 +32,9 @@
   "homepage": "https://github.com/imdone/imdone-cli#readme",
   "standard": {
     "globals": [
+      "document",
+      "describe",
+      "it",
       "should"
     ]
   },
@@ -51,6 +54,6 @@
     "lodash": "^4.17.4",
     "npid": "^0.4.0",
     "superagent": "^3.5.2",
-    "superagent-no-cache": "^0.1.1"
+    "superagent-no-cache": "imdone/superagent-no-cache"
   }
 }
