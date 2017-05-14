@@ -12,10 +12,15 @@ program.version(pkg.version)
   .option('add [path]', 'Start syncing project at path')
   .option('remove [path]', 'Stop syncing project at path')
   .option('list', 'List projects being synced with imdone.io')
+  .option('stop', 'Stop watching all projects')
   .parse(process.argv)
 
-let cmd = program.args[0]
-let path = program[cmd]
+var cmd
+if (program.add) cmd = 'add'
+if (program.remove) cmd = 'remove'
+if (program.list) cmd = 'list'
+if (program.stop) cmd = 'stop'
+const path = program[cmd]
 
 function processCommand () {
   var socket = eio(`ws://localhost:${PORT}`, {
@@ -30,14 +35,16 @@ function processCommand () {
   socket.on('open', function () {
     console.log('connection established with imdone service')
     socket.on('message', function (data) {
-      let msg = JSON.parse(data)
-      console.log(`message received: ${data}`)
+      // let msg = JSON.parse(data)
+      console.log(data)
       socket.close()
     })
     socket.on('close', function () {
       process.exit(1)
     })
-    socket.send(JSON.stringify({cmd, path}))
+    let req = JSON.stringify({cmd: cmd, path: path})
+    console.log(req)
+    socket.send(req)
   })
 }
 
