@@ -13,12 +13,16 @@ program.version(pkg.version)
   .option('remove [path]', 'Stop syncing project at path')
   .option('list', 'List projects being synced with imdone.io')
   .option('stop', 'Stop watching all projects')
+  .option('logoff', 'Log off of imdone.io')
   .parse(process.argv)
 
 var cmd
+debugger
 if (program.add) cmd = 'add'
 if (program.remove) cmd = 'remove'
 if (program.list) cmd = 'list'
+if (program.logoff) cmd = 'logoff'
+// TODO As a user I would like to find tasks with a _.find style json query
 if (program.stop) cmd = 'stop'
 const path = program[cmd]
 
@@ -33,17 +37,14 @@ function processCommand () {
   })
 
   socket.on('open', function () {
-    console.log('connection established with imdone service')
-    socket.on('message', function (data) {
-      // let msg = JSON.parse(data)
-      console.log(data)
+    socket.on('message', function (lines) {
+      JSON.parse(lines).forEach((line) => console.log(line))
       socket.close()
     })
     socket.on('close', function () {
       process.exit(1)
     })
     let req = JSON.stringify({cmd: cmd, path: path})
-    console.log(req)
     socket.send(req)
   })
 }
