@@ -32,6 +32,11 @@ function processCommand () {
     forceNode: true
   })
 
+  function sendRequest () {
+    let req = JSON.stringify({cmd: cmd, path: path})
+    socket.send(req)
+  }
+
   socket.on('error', function () {
     setTimeout(() => socket.open(), 1000)
   })
@@ -39,12 +44,14 @@ function processCommand () {
   socket.on('open', function () {
     socket.on('message', function (lines) {
       var msg = JSON.parse(lines)
-      var errMsg = msg[0]
-      if (errMsg === 'authentication-failed' || errMsg === 'unauthenticated') {
+      var status = msg[0]
+      if (status === 'authentication-failed' || status === 'unauthenticated') {
         authPrompt(function (data) {
           data.cmd = 'logon'
           socket.send(JSON.stringify(data))
         })
+      } else if (status === 'authenticated') {
+        sendRequest()
       } else {
         msg.forEach((line) => console.log(line))
         socket.close()
@@ -53,8 +60,7 @@ function processCommand () {
     socket.on('close', function () {
       process.exit(1)
     })
-    let req = JSON.stringify({cmd: cmd, path: path})
-    socket.send(req)
+    sendRequest()
   })
 }
 
