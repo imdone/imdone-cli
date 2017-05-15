@@ -17,12 +17,21 @@
       "XXX",
       "IDEA",
       "NOTE",
-      "REVIEW"
+      "REVIEW",
+      "TOOD"
     ]
   },
   "lists": [
     {
       "name": "TODO",
+      "hidden": false
+    },
+    {
+      "name": "DOING",
+      "hidden": false
+    },
+    {
+      "name": "TOOD",
       "hidden": false
     }
   ],
@@ -34,16 +43,16 @@
     "smartLists": true,
     "langPrefix": "language-"
   },
-  "sync": {
-    "id": "5904c8bf88b5b22687a1fb76",
-    "name": "imdone-cli",
-    "useImdoneioForPriority": true
-  },
   "meta": {
     "gh": {
       "urlTemplate": "https://github.com/imdone/imdone-cli/issues/%s",
       "titleTemplate": "View github issue %s",
       "icon": "icon-octoface"
     }
+  },
+  "sync": {
+    "id": "59195ad1c1dc4a33ce603274",
+    "name": ".",
+    "useImdoneioForPriority": true
   }
 }

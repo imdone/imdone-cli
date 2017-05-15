@@ -5,6 +5,7 @@ const pkg = require('./package.json')
 const program = require('commander')
 const pm2 = require('pm2')
 const eio = require('engine.io-client')
+const inquirer = require('inquirer')
 const PORT = 49153
 const NAME = 'imdone-service'
 
@@ -17,12 +18,11 @@ program.version(pkg.version)
   .parse(process.argv)
 
 var cmd
-debugger
 if (program.add) cmd = 'add'
 if (program.remove) cmd = 'remove'
 if (program.list) cmd = 'list'
 if (program.logoff) cmd = 'logoff'
-// TODO As a user I would like to find tasks with a _.find style json query
+// TODO As a user I would like to find tasks with a _.find style json query id:0
 if (program.stop) cmd = 'stop'
 const path = program[cmd]
 
@@ -38,8 +38,17 @@ function processCommand () {
 
   socket.on('open', function () {
     socket.on('message', function (lines) {
-      JSON.parse(lines).forEach((line) => console.log(line))
-      socket.close()
+      var msg = JSON.parse(lines)
+      var errMsg = msg[0]
+      if (errMsg === 'authentication-failed' || errMsg === 'unauthenticated') {
+        authPrompt(function (data) {
+          data.cmd = 'logon'
+          socket.send(JSON.stringify(data))
+        })
+      } else {
+        msg.forEach((line) => console.log(line))
+        socket.close()
+      }
     })
     socket.on('close', function () {
       process.exit(1)
@@ -47,6 +56,37 @@ function processCommand () {
     let req = JSON.stringify({cmd: cmd, path: path})
     socket.send(req)
   })
+}
+
+function authPrompt (callback) {
+  var questions = [
+    {
+      name: 'email',
+      type: 'input',
+      message: 'Enter your imdone.io e-mail address:',
+      validate: function (value) {
+        if (value.length) {
+          return true
+        } else {
+          return 'Please enter your e-mail address'
+        }
+      }
+    },
+    {
+      name: 'password',
+      type: 'password',
+      message: 'Enter your password:',
+      validate: function (value) {
+        if (value.length) {
+          return true
+        } else {
+          return 'Please enter your password'
+        }
+      }
+    }
+  ]
+
+  inquirer.prompt(questions).then(callback)
 }
 
 function error (err) {
@@ -67,7 +107,7 @@ pm2.connect(function (err) {
   pm2.list(function (err, list) {
     if (err) error()
     if (list.length > 0) return processCommand()
-    // TODO: The imdone.io service accept a port so we can display it later
+    // TODO: The imdone.io service accept a port so we can display it later id:1
     pm2.start({
       script: `./lib/imdone-service.js`,
       args: `${PORT}`,
