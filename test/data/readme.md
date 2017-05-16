@@ -1,4 +1,3 @@
-- #TOOD: This test data should not be used directly, it should be copied first id:29
 - #TODO: See the TODO forest through your source code file trees id:30
 - #TODO: The simplest way to manage TODOs and tasks id:31
 - #TODO: Create issue when TODOs are created and close them when the TODO is removed id:32

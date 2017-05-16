@@ -6,7 +6,9 @@ const program = require('commander')
 const pm2 = require('pm2')
 const eio = require('engine.io-client')
 const inquirer = require('inquirer')
-const PORT = 49153
+const path = require('path')
+const _ = require('lodash')
+const PORT = process.env.PORT = 49153
 const NAME = 'imdone-service'
 
 program.version(pkg.version)
@@ -22,9 +24,10 @@ if (program.add) cmd = 'add'
 if (program.remove) cmd = 'remove'
 if (program.list) cmd = 'list'
 if (program.logoff) cmd = 'logoff'
-// TODO As a user I would like to find tasks with a _.find style json query id:0
+// TODO As a user I would like to find tasks with a _.find style json query id:0 ok
 if (program.stop) cmd = 'stop'
-const path = program[cmd]
+var param = program[cmd]
+if (param && _.isString(param)) param = path.resolve(param)
 
 function processCommand () {
   var socket = eio(`ws://localhost:${PORT}`, {
@@ -33,7 +36,7 @@ function processCommand () {
   })
 
   function sendRequest () {
-    let req = JSON.stringify({cmd: cmd, path: path})
+    let req = JSON.stringify({cmd, param})
     socket.send(req)
   }
 
@@ -116,7 +119,6 @@ pm2.connect(function (err) {
     // TODO: The imdone.io service accept a port so we can display it later id:1
     pm2.start({
       script: `./lib/imdone-service.js`,
-      args: `${PORT}`,
       name: NAME
     }, function (err, apps) {
       if (err) error(err)

@@ -24,7 +24,7 @@
   "lists": [
     {
       "name": "TODO",
-      "hidden": false
+      "hidden": true
     },
     {
       "name": "DOING",
@@ -51,8 +51,8 @@
     }
   },
   "sync": {
-    "id": "59195d62c1dc4a33ce603298",
-    "name": ".",
+    "id": "591aa4afa467717a52ab181e",
+    "name": "imdone-cli",
     "useImdoneioForPriority": true
   }
 }
