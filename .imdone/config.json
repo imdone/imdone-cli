@@ -49,10 +49,5 @@
       "titleTemplate": "View github issue %s",
       "icon": "icon-octoface"
     }
-  },
-  "sync": {
-    "id": "591aa4afa467717a52ab181e",
-    "name": "imdone-cli",
-    "useImdoneioForPriority": true
   }
 }
