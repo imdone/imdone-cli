@@ -7,7 +7,9 @@ const pm2 = require('pm2')
 const eio = require('engine.io-client')
 const inquirer = require('inquirer')
 const path = require('path')
+const ora = require('ora')()
 const _ = require('lodash')
+const ERRORS = require('./lib/imdoneio-client').ERRORS
 const PORT = process.env.PORT = 49153
 const NAME = 'imdone-service'
 
@@ -36,8 +38,16 @@ function processCommand () {
   })
 
   function sendRequest () {
+    ora.start()
     let req = JSON.stringify({cmd, param})
     socket.send(req)
+  }
+
+  function handleResponse (res) {
+    if (ERRORS[res.err]) return console.log(ERRORS[res.err].msg)
+    if (res.err) console.log(`ERROR: ${res.err}`)
+    if (res.status) console.log(`STATUS: ${res.status}`)
+    if (res.msg) res.msg.forEach((line) => console.log(line))
   }
 
   socket.on('error', function () {
@@ -45,18 +55,21 @@ function processCommand () {
   })
 
   socket.on('open', function () {
-    socket.on('message', function (lines) {
-      var msg = JSON.parse(lines)
-      var status = msg[0]
-      if (status === 'authentication-failed' || status === 'unauthenticated') {
+    socket.on('message', function (response) {
+      ora.stop()
+      response = JSON.parse(response)
+      var err = response.err
+      var status = response.status
+      if (err === 'authentication-failed' || err === 'unauthenticated') {
         authPrompt(function (data) {
           data.cmd = 'logon'
+          ora.start()
           socket.send(JSON.stringify(data))
         })
       } else if (status === 'authenticated') {
         sendRequest()
       } else {
-        msg.forEach((line) => console.log(line))
+        handleResponse(response)
         socket.close()
       }
     })
