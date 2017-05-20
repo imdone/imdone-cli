@@ -10,7 +10,8 @@ const path = require('path')
 const ora = require('ora')()
 const _ = require('lodash')
 const ERRORS = require('./lib/imdoneio-client').ERRORS
-const PORT = process.env.PORT = 49153
+const PORT = process.env.PORT || 44044
+process.env.PORT = PORT
 const NAME = 'imdone-service'
 
 program.version(pkg.version)
@@ -21,15 +22,42 @@ program.version(pkg.version)
   .option('logoff', 'Log off of imdone.io')
   .parse(process.argv)
 
+if (!process.argv.slice(2).length) return program.outputHelp()
+
 var cmd
+// TODO As a user I would like to find tasks with a _.find style json query id:0 ok
 if (program.add) cmd = 'add'
 if (program.remove) cmd = 'remove'
 if (program.list) cmd = 'list'
 if (program.logoff) cmd = 'logoff'
-// TODO As a user I would like to find tasks with a _.find style json query id:0 ok
 if (program.stop) cmd = 'stop'
 var param = program[cmd]
 if (param && _.isString(param)) param = path.resolve(param)
+
+pm2.connect(function (err) {
+  if (err) error(err)
+
+  if (cmd === 'stop') {
+    pm2.killDaemon(function () {
+      process.exit(1)
+    })
+    return
+  }
+
+  pm2.list(function (err, list) {
+    if (err) error()
+    if (list.length > 0) return processCommand()
+    // TODO: The imdone.io service accept a port so we can display it later id:1
+    pm2.start({
+      script: `./lib/imdone-service.js`,
+      name: NAME
+    }, function (err, apps) {
+      if (err) error(err)
+      console.log(`the imdone service is now running on port ${PORT}`)
+      processCommand()
+    })
+  })
+})
 
 function processCommand () {
   var socket = eio(`ws://localhost:${PORT}`, {
@@ -115,28 +143,3 @@ function error (err) {
   console.error(err)
   process.exit(2)
 }
-
-pm2.connect(function (err) {
-  if (err) error(err)
-
-  if (cmd === 'stop') {
-    pm2.killDaemon(function () {
-      process.exit(1)
-    })
-    return
-  }
-
-  pm2.list(function (err, list) {
-    if (err) error()
-    if (list.length > 0) return processCommand()
-    // TODO: The imdone.io service accept a port so we can display it later id:1
-    pm2.start({
-      script: `./lib/imdone-service.js`,
-      name: NAME
-    }, function (err, apps) {
-      if (err) error(err)
-      console.log(`the imdone service is now running on port ${PORT}`)
-      processCommand()
-    })
-  })
-})
