@@ -9,6 +9,7 @@ const inquirer = require('inquirer')
 const path = require('path')
 const ora = require('ora')()
 const _ = require('lodash')
+const debug = require('debug')('imdone')
 const ERRORS = require('./lib/imdoneio-client').ERRORS
 const PORT = process.env.PORT || 44044
 process.env.PORT = PORT
@@ -47,13 +48,11 @@ pm2.connect(function (err) {
   pm2.list(function (err, list) {
     if (err) error()
     if (list.length > 0) return processCommand()
-    // TODO: The imdone.io service accept a port so we can display it later id:1
     pm2.start({
       script: `./lib/imdone-service.js`,
       name: NAME
     }, function (err, apps) {
       if (err) error(err)
-      console.log(`the imdone service is now running on port ${PORT}`)
       processCommand()
     })
   })
@@ -73,9 +72,13 @@ function processCommand () {
 
   function handleResponse (res) {
     if (ERRORS[res.err]) return console.log(ERRORS[res.err].msg)
-    if (res.err) console.log(`ERROR: ${res.err}`)
-    if (res.status) console.log(`STATUS: ${res.status}`)
+    if (res.err === 'Bad Request') return program.outputHelp()
+    if (res.err) return console.log(`ERROR: ${res.err}`)
     if (res.msg) res.msg.forEach((line) => console.log(line))
+    if (res.status) {
+      if (res.status === 'show.help') return program.outputHelp()
+      console.log(res.status)
+    }
   }
 
   socket.on('error', function () {
@@ -85,16 +88,16 @@ function processCommand () {
   socket.on('open', function () {
     socket.on('message', function (response) {
       ora.stop()
+      debug(`received response: ${response}`)
       response = JSON.parse(response)
-      var err = response.err
-      var status = response.status
-      if (err === 'authentication-failed' || err === 'unauthenticated') {
+      if (response.err === 'authentication-failed' || response.status === 'unauthenticated') {
         authPrompt(function (data) {
           data.cmd = 'logon'
           ora.start()
           socket.send(JSON.stringify(data))
         })
-      } else if (status === 'authenticated') {
+      } else if (response.status === 'authenticated') {
+        console.log(`user authenticated, running : ${cmd} ${param}`)
         sendRequest()
       } else {
         handleResponse(response)
@@ -109,6 +112,8 @@ function processCommand () {
 }
 
 function authPrompt (callback) {
+  // TODO should make messages look better
+  console.log(`Integrate TODO's where ever you choose.  Sign in to imdone.io now or create a new account at http://imdone.io.`)
   var questions = [
     {
       name: 'email',

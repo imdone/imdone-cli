@@ -24,15 +24,15 @@
   "lists": [
     {
       "name": "TODO",
-      "hidden": true
+      "hidden": false
     },
     {
       "name": "DOING",
       "hidden": false
     },
     {
-      "name": "TOOD",
-      "hidden": false
+      "name": "NOTE",
+      "hidden": true
     }
   ],
   "marked": {
@@ -49,5 +49,10 @@
       "titleTemplate": "View github issue %s",
       "icon": "icon-octoface"
     }
+  },
+  "sync": {
+    "id": "592070b33d01dc5e080c0e1a",
+    "name": "imdone-cli",
+    "useImdoneioForPriority": true
   }
 }

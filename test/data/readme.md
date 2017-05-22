@@ -1,5 +1,5 @@
-- #TODO: See the TODO forest through your source code file trees id:30
-- #TODO: The simplest way to manage TODOs and tasks id:31
-- #TODO: Create issue when TODOs are created and close them when the TODO is removed id:32
-- #TODO: Imagine this one in a blog post that publishes when it's removed! id:33
-- #TODO: Imagine this one in an implementation plan that deploys code when it's moved to DONE id:34
+- #NOTE: See the NOTE forest through your source code file trees id:30
+- #NOTE: The simplest way to manage NOTEs and tasks id:31
+- #NOTE: Create issue when NOTEs are created and close them when the NOTE is removed id:32
+- #NOTE: Imagine this one in a blog post that publishes when it's removed! id:33
+- #NOTE: Imagine this one in an implementation plan that deploys code when it's moved to DONE id:34
