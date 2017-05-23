@@ -16,43 +16,44 @@ process.env.PORT = PORT
 const NAME = 'imdone-service'
 
 program.version(pkg.version)
+  .option('start', 'Start imdone')
+  .option('stop', 'Stop imdone')
+  .option('logoff', 'Log off of imdone.io')
   .option('add [path]', 'Start syncing project at path')
   .option('remove [path]', 'Stop syncing project at path')
   .option('list', 'List projects being synced with imdone.io')
-  .option('stop', 'Stop watching all projects')
-  .option('logoff', 'Log off of imdone.io')
   .parse(process.argv)
 
 if (!process.argv.slice(2).length) return program.outputHelp()
 
 var cmd
 // TODO As a user I would like to find tasks with a _.find style json query id:0 ok
-if (program.add) cmd = 'add'
-if (program.remove) cmd = 'remove'
-if (program.list) cmd = 'list'
-if (program.logoff) cmd = 'logoff'
-if (program.stop) cmd = 'stop'
+program.options.forEach(function(option) {
+  if (option.short) return
+  if (program[option.long]) cmd = option.long
+})
+
 var param = program[cmd]
 if (param && _.isString(param)) param = path.resolve(param)
 
 pm2.connect(function (err) {
-  if (err) error(err)
+  if (err) return error(err)
 
   if (cmd === 'stop') {
-    pm2.killDaemon(function () {
+    return pm2.killDaemon(function () {
       process.exit(1)
     })
-    return
   }
 
-  pm2.list(function (err, list) {
-    if (err) error()
-    if (list.length > 0) return processCommand()
+  pm2.describe(NAME, function (err, desc) {
+    if (err) return error()
     pm2.start({
       script: `./lib/imdone-service.js`,
       name: NAME
     }, function (err, apps) {
-      if (err) error(err)
+      debugger
+      if (err) return error(err)
+      if (cmd === 'start') return
       processCommand()
     })
   })
