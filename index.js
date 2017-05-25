@@ -8,6 +8,7 @@ const eio = require('engine.io-client')
 const inquirer = require('inquirer')
 const path = require('path')
 const ora = require('ora')()
+const chalk = require('chalk')
 const _ = require('lodash')
 const debug = require('debug')('imdone')
 const ERRORS = require('./lib/imdoneio-client').ERRORS
@@ -47,15 +48,26 @@ pm2.connect(function (err) {
 
   pm2.describe(NAME, function (err, desc) {
     if (err) return error()
-    pm2.start({
-      script: `./lib/imdone-service.js`,
-      name: NAME
-    }, function (err, apps) {
-      debugger
-      if (err) return error(err)
-      if (cmd === 'start') return
+    const running = _.find(desc, {name:NAME})
+    if (running) {
+      if (cmd === 'start') {
+        console.log(chalk.yellow('imdone is already running'))
+        return process.exit(1)
+      }
       processCommand()
-    })
+    } else {
+      pm2.start({
+        script: `./lib/imdone-service.js`,
+        name: NAME
+      }, function (err, apps) {
+        if (err) return error(err)
+        if (cmd === 'start') {
+          console.log(chalk.green('imdone listener started'))
+          return process.exit(1)
+        }
+        processCommand()
+      })
+    }
   })
 })
 
@@ -113,7 +125,7 @@ function processCommand () {
 }
 
 function authPrompt (callback) {
-  // TODO should make messages look better
+  // TODO should make messages look better id:4
   console.log(`Integrate TODO's where ever you choose.  Sign in to imdone.io now or create a new account at http://imdone.io.`)
   var questions = [
     {
