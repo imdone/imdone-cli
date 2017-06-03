@@ -1,5 +1,5 @@
-- #NOTE: See the NOTE forest through your source code file trees id:30
-- #NOTE: The simplest way to manage NOTEs and tasks id:31
-- #NOTE: Create issue when NOTEs are created and close them when the NOTE is removed id:32
-- #NOTE: Imagine this one in a blog post that publishes when it's removed! id:33
-- #NOTE: Imagine this one in an implementation plan that deploys code when it's moved to DONE id:34
+- #NOTE: See the NOTE forest through your source code file trees id:3
+- #NOTE: The simplest way to manage NOTEs and tasks id:6
+- #NOTE: Create issue when NOTEs are created and close them when the NOTE is removed id:9
+- #NOTE: Imagine this one in a blog post that publishes when it's removed! id:12
+- #NOTE: Imagine this one in an implementation plan that deploys code when it's moved to DONE id:15

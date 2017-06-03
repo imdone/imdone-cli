@@ -12,8 +12,8 @@ const chalk = require('chalk')
 const _ = require('lodash')
 const debug = require('debug')('imdone')
 const ERRORS = require('./lib/imdoneio-client').ERRORS
-const PORT = process.env.PORT || 44044
-process.env.PORT = PORT
+const PORT = process.env.IMDONE_PORT = process.env.IMDONE_PORT || 44044
+process.env.IMDONE_REPL_PORT = process.env.IMDONE_REPL_PORT || 44045
 const NAME = 'imdone-service'
 
 program.version(pkg.version)
@@ -28,7 +28,7 @@ program.version(pkg.version)
 if (!process.argv.slice(2).length) return program.outputHelp()
 
 var cmd
-// TODO As a user I would like to find tasks with a _.find style json query id:0 ok
+// TODO As a user I would like to find tasks with a _.find style json query ok id:1
 program.options.forEach(function(option) {
   if (option.short) return
   if (program[option.long]) cmd = option.long
